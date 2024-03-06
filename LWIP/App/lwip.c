@@ -67,6 +67,8 @@ void MX_LWIP_Init(void)
   IP_ADDRESS[1] = 254;
   IP_ADDRESS[2] = 0;
   IP_ADDRESS[3] = 123;
+
+
   NETMASK_ADDRESS[0] = 255;
 
   NETMASK_ADDRESS[1] = 255;
