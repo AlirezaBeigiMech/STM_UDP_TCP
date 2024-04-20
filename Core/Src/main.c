@@ -139,7 +139,7 @@ int main(void)
   TaskTCPHandle = osThreadNew(StartDefaultTask, NULL, &TaskTCP_attributes);
 
   /* creation of TaskUDP */
-  TaskUDPHandle = osThreadNew(StartTask02, NULL, &TaskUDP_attributes);
+  //TaskUDPHandle = osThreadNew(StartTask02, NULL, &TaskUDP_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -247,7 +247,7 @@ static void MX_GPIO_Init(void)
 mqtt_client_t *client;
 char pacote[1000];
 
-
+__IO uint32_t LocalTime = 0; /* this variable is used to create a time reference incremented by 10ms */
 
 /* USER CODE END 4 */
 
@@ -258,6 +258,7 @@ char pacote[1000];
   * @retval None
   */
 /* USER CODE END Header_StartDefaultTask */
+
 void StartDefaultTask(void *argument)
 {
   /* init code for LWIP */
@@ -279,6 +280,8 @@ void StartDefaultTask(void *argument)
 	    example_publish(client, pacote);
 	  }
 	   */
+	  ethernetif_input(&gnetif);
+	  sys_check_timeouts();
     osDelay(500);
 
   }

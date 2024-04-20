@@ -111,6 +111,8 @@
 #define CHECKSUM_CHECK_ICMP6 0
 /*-----------------------------------------------------------------------------*/
 /* USER CODE BEGIN 1 */
+//#define 	LWIP_SOCKET   1
+//#define 	LWIP_TCP   1
 
 /* USER CODE END 1 */
 
