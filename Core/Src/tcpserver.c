@@ -26,7 +26,7 @@ static void tcp_socket_thread(void *arg);
 
 
 /**** Send RESPONSE every time the client sends some data ******/
-static void tcp_thread(void *arg)
+static void tcp_netconn_thread(void *arg)
 {
 	err_t err, accept_err, recv_error;
 
