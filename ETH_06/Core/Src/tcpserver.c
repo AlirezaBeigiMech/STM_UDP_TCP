@@ -35,7 +35,7 @@ void tcpsend (char *data)
 	// send the data to the connected connection
 	netconn_write(conn, data, strlen(data), NETCONN_COPY);
 	// relaese the semaphore
-	sys_sem_signal(&tcpsem);
+	//sys_sem_signal(&tcpsem);
 }
 
 /**** Send RESPONSE every time the client sends some data ******/
@@ -132,7 +132,7 @@ static void tcpinit_thread(void *arg)
 			if (connect_error == ERR_OK)
 			{
 				// Release the semaphore once the connection is successful
-				sys_sem_signal(&tcpsem);
+				//sys_sem_signal(&tcpsem);
 				while (1)
 				{
 					/* wait until the data is sent by the server */
@@ -152,7 +152,7 @@ static void tcpinit_thread(void *arg)
 							sprintf (smsgc, "\"%s\" was sent by the Server\n", msgc);
 
 							// semaphore must be taken before accessing the tcpsend function
-							sys_arch_sem_wait(&tcpsem, 500);
+							//sys_arch_sem_wait(&tcpsem, 500);
 
 							// send the data to the TCP Server
 							tcpsend (smsgc);
