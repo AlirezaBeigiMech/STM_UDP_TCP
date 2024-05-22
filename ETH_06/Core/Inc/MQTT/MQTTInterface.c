@@ -36,7 +36,7 @@ int TimerLeftMS(Timer *timer) {
 void TimerInit(Timer *timer) {
 	timer->end_time = 0;
 }
-
+/*
 #ifdef MQTT_LWIP_SOCKET
 void NewNetwork(Network *n) {
 	n->socket = 0; //clear
@@ -76,7 +76,7 @@ int ConnectNetwork(Network *n, char *ip, int port) {
 int net_read(Network *n, unsigned char *buffer, int len, int timeout_ms) {
 	int available;
 
-	/* !!! LWIP_SO_RCVBUF must be enabled !!! */
+	/* !!! LWIP_SO_RCVBUF must be enabled !!!
 	if(ioctl(n->socket, FIONREAD, &available) < 0) return -1; //check receive buffer
 
 	if(available > 0)
@@ -95,8 +95,8 @@ void net_disconnect(Network *n) {
 	close(n->socket);
 	n->socket = 0;
 }
-
-#elif MQTT_LWIP_NETCONN
+*/
+#ifdef MQTT_LWIP_NETCONN
 void NewNetwork(Network *n) {
 	n->conn = NULL;
 	n->buf = NULL;

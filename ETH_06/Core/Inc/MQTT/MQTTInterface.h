@@ -8,8 +8,8 @@
 #ifndef __MQTT_INTERFACE_H_
 #define __MQTT_INTERFACE_H_
 
-#define MQTT_LWIP_SOCKET	//Use SOCKET API
-//#define MQTT_LWIP_NETCONN //Use NETCONN API
+//#define MQTT_LWIP_SOCKET	//Use SOCKET API
+#define MQTT_LWIP_NETCONN //Use NETCONN API
 
 typedef struct Timer Timer;
 
@@ -22,9 +22,9 @@ typedef struct Network Network;
 
 struct Network
 {
-#ifdef MQTT_LWIP_SOCKET
-	int socket;
-#elif MQTT_LWIP_NETCONN
+//#ifdef MQTT_LWIP_SOCKET
+//	int socket;
+#ifdef MQTT_LWIP_NETCONN
 	struct netconn *conn;
 	struct netbuf *buf;
 	int offset;

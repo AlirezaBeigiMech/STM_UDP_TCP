@@ -57,7 +57,7 @@ const osThreadAttr_t TaskTCP_attributes = {
 osThreadId_t TaskUDPHandle;
 const osThreadAttr_t TaskUDP_attributes = {
   .name = "TaskUDP",
-  .stack_size = 128 * 8,
+  .stack_size = 128 * 16,
   .priority = (osPriority_t) osPriorityLow,
 };
 /* USER CODE BEGIN PV */
@@ -71,6 +71,9 @@ void StartDefaultTask(void *argument);
 void StartTask02(void *argument);
 
 /* USER CODE BEGIN PFP */
+
+
+
 
 /* USER CODE END PFP */
 

@@ -11,6 +11,7 @@
 #include "lwip/sys.h"
 
 #include "tcpserver.h"
+#include "lwip_mqtt.h"
 #include "string.h"
 static struct netconn *conn, *newconn;
 static struct netbuf *buf;
@@ -201,7 +202,9 @@ void tcpserver_init(void)
 {
   //sys_thread_new("tcp_thread", tcp_thread, NULL, DEFAULT_THREAD_STACKSIZE,osPriorityNormal);
   //sys_sem_new(tcpsem, 0);
-  sys_thread_new("tcp_thread", tcpinit_thread, NULL, DEFAULT_THREAD_STACKSIZE,osPriorityNormal);
+  //sys_thread_new("tcp_thread", tcpinit_thread, NULL, DEFAULT_THREAD_STACKSIZE,osPriorityNormal);
+  sys_thread_new("tcp_thread", MqttClientSubTask, NULL, DEFAULT_THREAD_STACKSIZE,osPriorityNormal);
+
   //sys_thread_new("tcpsend_thread", tcpsend_thread, NULL, DEFAULT_THREAD_STACKSIZE,osPriorityNormal);
 
 }

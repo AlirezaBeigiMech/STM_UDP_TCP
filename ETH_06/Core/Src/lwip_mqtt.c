@@ -4,6 +4,138 @@
 #include "stm32f4xx_hal.h"
 #include "cmsis_os.h"
 
+// ##############################################################
+
+#include <string.h>
+#include "lwip.h"
+#include "lwip/api.h"
+#include "MQTTClient.h"
+#include "MQTTInterface.h"
+
+#define BROKER_IP		"192.168.0.2"
+//#define MQTT_PORT		1883
+#define MQTT_BUFSIZE	1024
+
+
+
+osThreadId mqttClientSubTaskHandle;  //mqtt client task handle
+osThreadId mqttClientPubTaskHandle;  //mqtt client task handle
+
+Network net; //mqtt network
+MQTTClient mqttClient; //mqtt client
+
+uint8_t sndBuffer[MQTT_BUFSIZE]; //mqtt send buffer
+uint8_t rcvBuffer[MQTT_BUFSIZE]; //mqtt receive buffer
+uint8_t msgBuffer[MQTT_BUFSIZE]; //mqtt message buffer
+
+void MqttClientSubTask(void const *argument)
+{
+	/*
+	while(1)
+	{
+		//waiting for valid ip address
+		if (gnetif.ip_addr.addr == 0 || gnetif.netmask.addr == 0 || gnetif.gw.addr == 0) //system has no valid ip address
+		{
+			osDelay(1000);
+			continue;
+		}
+		else
+		{
+			printf("DHCP/Static IP O.K.\n");
+			break;
+		}
+	}
+	*/
+
+	while(!mqttClient.isconnected)
+	{
+		if(!mqttClient.isconnected)
+		{
+			//try to connect to the broker
+			MQTTDisconnect(&mqttClient);
+			MqttConnectBroker();
+			osDelay(1000);
+		}
+		else
+		{
+			MQTTYield(&mqttClient, 1000); //handle timer
+			osDelay(100);
+		}
+	}
+
+	const char* str = "MQTT message from STM32";
+	MQTTMessage message;
+
+	while(1)
+	{
+		if(mqttClient.isconnected)
+		{
+			message.payload = (void*)str;
+			message.payloadlen = strlen(str);
+
+			MQTTPublish(&mqttClient, "test", &message); //publish a message
+		}
+
+		osDelay(1000);
+	}
+
+}
+
+int MqttConnectBroker()
+{
+	int ret;
+
+	NewNetwork(&net);
+	ret = ConnectNetwork(&net, BROKER_IP, MQTT_PORT);
+	osDelay(1000);
+	if(ret != MQTT_SUCCESS)
+	{
+		printf("ConnectNetwork failed.\n");
+		return -1;
+	}
+
+	MQTTClientInit(&mqttClient, &net, 1000, sndBuffer, sizeof(sndBuffer), rcvBuffer, sizeof(rcvBuffer));
+
+	MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
+	data.willFlag = 0;
+	data.MQTTVersion = 3;
+	data.clientID.cstring = "STM32F4";
+	data.username.cstring = "STM32F4";
+	data.password.cstring = "";
+	data.keepAliveInterval = 60;
+	data.cleansession = 1;
+
+	ret = MQTTConnect(&mqttClient, &data);
+	if(ret != MQTT_SUCCESS)
+	{
+		printf("MQTTConnect failed.\n");
+		return ret;
+	}
+
+	ret = MQTTSubscribe(&mqttClient, "test", QOS0, MqttMessageArrived);
+	if(ret != MQTT_SUCCESS)
+	{
+		printf("MQTTSubscribe failed.\n");
+		return ret;
+	}
+
+	printf("MQTT_ConnectBroker O.K.\n");
+	return MQTT_SUCCESS;
+}
+void MqttMessageArrived(MessageData* msg)
+{
+	//HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin); //toggle pin when new message arrived
+
+	MQTTMessage* message = msg->message;
+	memset(msgBuffer, 0, sizeof(msgBuffer));
+	memcpy(msgBuffer, message->payload,message->payloadlen);
+
+	printf("MQTT MSG[%d]:%s\n", (int)message->payloadlen, msgBuffer);
+}
+
+// ##############################################################
+
+
 //extern UART_HandleTypeDef huart4;
 char buffer[1000];
 /* The idea is to demultiplex topic and create some reference to be used in data callbacks
